@@ -1,19 +1,26 @@
-import { useContext, useCallback } from 'react';
+import { useContext, useCallback, useEffect } from 'react';
 
 import isNil from '../../helpers/isNil';
 
 import { IlloContext } from '../Illustration';
 
 export default () => {
-  const illoRef = useContext(IlloContext);
+  const {ref: illoRef, sceneCount, readyCount} = useContext(IlloContext);
+
+  useEffect(
+    () => {
+      sceneCount.current += 1;
+    },
+    [sceneCount],
+  );
 
   return useCallback(
     () => {
       const { current: illo } = illoRef;
       if (!isNil(illo)) {
-        illo.updateRenderGraph();
+        readyCount.current += 1;
       }
     },
-    [illoRef],
+    [illoRef, readyCount],
   );
 }

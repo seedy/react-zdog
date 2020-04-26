@@ -1,4 +1,4 @@
-import React, {createContext, memo, useRef, useCallback, useEffect, forwardRef} from 'react';
+import React, {createContext, memo, useRef, useCallback, useEffect, forwardRef, Children, useMemo} from 'react';
 import PropTypes from 'prop-types';
 
 import AXES from '../AXES';
@@ -12,6 +12,7 @@ import {Illustration, easeInOut} from 'zdog';
 
 import withParentContext from '../Context/Parent/with';
 
+// CONTEXT
 export const IlloContext = createContext({});
 
 // CONSTANTS
@@ -29,10 +30,23 @@ const computeRotate = (prevRotate, {value, easingAngle}) => {
     TICKER++;
     return easing * easingAngle;
   }
-}
+};
+
+const shouldAnimate = (illo, childrenCount, sceneCount, readyCount) => !isNil(illo) 
+&& (childrenCount === 0 ||  (childrenCount > 0 && sceneCount > 0 && sceneCount === readyCount))
 
 // COMPONENTS
-let ReactIllustration = ({children, dragRotate, onMount, ...props}, ref) => {
+let ReactIllustration = ({children, dragRotate, onMount, sceneCount, readyCount, ...props}, ref) => {
+
+  const contextValue = useMemo(
+    () => ({
+      ref,
+      sceneCount,
+      readyCount,
+    }),
+    [ref, sceneCount, readyCount],
+  );
+
   const onIlloNode = useCallback(
     (node) => {
       if (!isNil(node)) {
@@ -48,8 +62,8 @@ let ReactIllustration = ({children, dragRotate, onMount, ...props}, ref) => {
   );
 
   return (
-    <IlloContext.Provider value={ref}>
-      <svg width="500" height="500" ref={onIlloNode} />
+    <IlloContext.Provider value={contextValue}>
+      <svg width="800" height="800" ref={onIlloNode} />
       {children}
     </IlloContext.Provider>
   );
@@ -61,6 +75,9 @@ ReactIllustration = forwardRef(ReactIllustration);
 ReactIllustration.propTypes = {
   children: PropTypes.node,
   dragRotate: PropTypes.bool,
+  // useful for animation
+  sceneCount: PropTypes.shape({current: PropTypes.number}),
+  readyCount: PropTypes.shape({current: PropTypes.number}),
   // withParentContext
   onMount: PropTypes.func.isRequired,
 };
@@ -72,13 +89,17 @@ ReactIllustration.defaultProps = {
 ReactIllustration = withParentContext(ReactIllustration);
 ReactIllustration = memo(ReactIllustration, always(true));
 
-const AnimationLayer = ({ rotate, dragRotate, ...rest }) => {
+const AnimationLayer = ({ rotate, dragRotate, children, ...rest }) => {
   const illoRef = useRef();
+  const sceneCountRef = useRef(0);
+  const readyCountRef = useRef(0);
 
   const onAnimate = useCallback(
     () => {
       const { current: illo } = illoRef;
-      if (!isNil(illo)) {
+      const {current: sceneCount} = sceneCountRef;
+      const {current: readyCount} = readyCountRef;
+      if (shouldAnimate(illo, Children.count(children), sceneCount, readyCount)) {
         if (!isNil(rotate)) {
           const { axis } = rotate;
           const value = computeRotate(illo.rotate[axis], rotate);
@@ -90,7 +111,7 @@ const AnimationLayer = ({ rotate, dragRotate, ...rest }) => {
         }
       }
     },
-    [dragRotate, rotate],
+    [children, rotate, dragRotate],
   );
 
   useRequestAnimationFrame(onAnimate);
@@ -102,7 +123,16 @@ const AnimationLayer = ({ rotate, dragRotate, ...rest }) => {
     [onAnimate],
   );
 
-  return <ReactIllustration ref={illoRef} dragRotate={dragRotate} {...rest} />;
+  return (
+    <ReactIllustration 
+      ref={illoRef} 
+      sceneCount={sceneCountRef} 
+      readyCount={readyCountRef} 
+      dragRotate={dragRotate} 
+      children={children} 
+      {...rest} 
+    />
+  );
 }
 
 AnimationLayer.propTypes = {
