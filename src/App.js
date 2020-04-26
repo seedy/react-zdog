@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useCallback, useMemo} from 'react';
 
 import {TAU} from 'zdog';
 
@@ -8,9 +8,10 @@ import MuiBox from '@material-ui/core/Box';
 import Illustration from './Zdog/Illustration';
 import Vault from './components/Vault';
 import Logo from './components/Logo';
+import Gear from './components/Gear';
 
 // CONSTANTS
-const TRANSLATE_BACKGROUND = { z: -100 };
+const TRANSLATE_BACKGROUND = { z: -300 };
 const LOGO_ROTATE = { x: TAU / 2 };
 
 const ILLU_ROTATE = {
@@ -29,6 +30,20 @@ const useStyles = makeStyles((theme) => ({
 const App = () => {
   const classes = useStyles();
 
+  const [rotating, setRotating] = useState(true);
+
+  const onDragStart = useCallback(
+    () => {
+      setRotating(false);
+    },
+    [setRotating],
+  );
+
+  const rotate = useMemo(
+    () => rotating ? ILLU_ROTATE : null,
+    [rotating],
+  );
+
   return (
     <MuiBox 
       height="100%" 
@@ -38,9 +53,10 @@ const App = () => {
       justifyContent="center" 
       classes={{root: classes.boxRoot}}
     >
-      <Illustration rotate={ILLU_ROTATE}>
-        <Vault/>
-        <Logo translate={TRANSLATE_BACKGROUND} rotate={LOGO_ROTATE} />
+      <Illustration rotate={null} dragRotate onDragStart={onDragStart}>
+        {/* <Vault/> */}
+        {/* <Logo translate={TRANSLATE_BACKGROUND} rotate={LOGO_ROTATE} /> */}
+        <Gear />
       </Illustration>
     </MuiBox>
   );
