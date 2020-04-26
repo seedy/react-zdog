@@ -1,10 +1,14 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
+import {TAU} from 'zdog';
 
 import Anchor from '../../Zdog/Anchor';
-import Rect from '../../Zdog/Rect';
+import Hemisphere from '../../Zdog/Hemisphere';
 import Shape from '../../Zdog/Shape';
+
+// CONSTANTS
+const ROTATE_HEMISPHERE = {x: TAU / 2};
 
 // COMPONENTS
 const Logo = ({radius, stroke, ...rest}) => {
@@ -20,12 +24,12 @@ const Logo = ({radius, stroke, ...rest}) => {
     [radius],
   );
 
-  const rectDiameter = useMemo(
-    () => 2 * (radius + stroke) ,
+  const hemisphereDiameter = useMemo(
+    () => 2.5 * (radius + stroke) ,
     [radius, stroke],
   );
 
-  const rectTranslate = useMemo(
+  const hemisphereTranslate = useMemo(
     () => ({z: -stroke}),
     [stroke],
   );
@@ -37,15 +41,14 @@ const Logo = ({radius, stroke, ...rest}) => {
         path={path}
         stroke={stroke}
         closed={false}
-        color="white"
-      />
-      <Rect
-        width={rectDiameter}
-        height={rectDiameter}
-        stroke={stroke}
-        fill
         color="#e32e73"
-        translate={rectTranslate}
+      />
+      <Hemisphere
+        diameter={hemisphereDiameter}
+        backface="white"
+        color="#e32e73"
+        translate={hemisphereTranslate}
+        rotate={ROTATE_HEMISPHERE}
       />
     </Anchor>
   );
