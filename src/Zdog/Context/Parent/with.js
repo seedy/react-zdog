@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, createContext} from 'react';
+import React, {forwardRef, useCallback, useRef, createContext} from 'react';
 import PropTypes from 'prop-types';
 
 // CONTEXT
@@ -6,24 +6,24 @@ export const ParentContext = createContext({});
 
 // HOC
 const withParentContext = (Component) => {
-  const Wrapper = ({children, ...rest}) => {
-    const ref = useRef();
+  const Wrapper = forwardRef(({children, ...rest}, ref) => {
+    const instanceRef = useRef();
 
     const onMount = useCallback(
       (zdogInstance) => {
-        ref.current = zdogInstance;
+        instanceRef.current = zdogInstance;
       },
-      [ref],
+      [instanceRef],
     );
     
     return (
-    <Component onMount={onMount} {...rest}>
-      <ParentContext.Provider value={ref}>
+    <Component ref={ref} onMount={onMount} {...rest}>
+      <ParentContext.Provider value={instanceRef}>
         {children}
       </ParentContext.Provider>
     </Component>
     );
-  }
+  })
 
   Wrapper.propTypes = {
     children: PropTypes.node,
