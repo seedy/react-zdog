@@ -1,16 +1,35 @@
 import React, {createContext, useRef, useCallback, useEffect} from 'react';
 import PropTypes from 'prop-types';
 
+import AXES from '../AXES';
+
 import isNil from '../../helpers/isNil';
 
-import {Illustration} from 'zdog';
+import {Illustration, easeInOut} from 'zdog';
 
 import withParentContext from '../Context/Parent/with';
 
 export const IlloContext = createContext({});
 
+// CONSTANTS
+const CYCLES = 150;
+let TICKER = 0;
+
+// HELPERS
+const computeRotate = (prevRotate, {value, easingAngle}) => {
+  if (!isNil(value)) {
+    return prevRotate + value;
+  }
+  if (!isNil(easingAngle)) {
+    const progress = TICKER / CYCLES;
+    const easing = easeInOut(progress % 1);
+    TICKER++;
+    return easing * easingAngle;
+  }
+}
+
 // CONTEXT
-const ReactIllustration = ({children, dragRotate, onMount, ...props}) => {
+const ReactIllustration = ({children, dragRotate, rotate, onMount, ...props}) => {
   const illoRef = useRef();
 
   const onIlloNode = useCallback(
@@ -32,12 +51,18 @@ const ReactIllustration = ({children, dragRotate, onMount, ...props}) => {
       const { current: illo } = illoRef;
       if (!isNil(illo)) {
         illo.updateRenderGraph();
+        if (!isNil(rotate)) {
+          const {axis} = rotate;
+          const value = computeRotate(illo.rotate[axis], rotate);
+          illo.rotate[axis] = value;
+          return requestAnimationFrame(animate);
+        } 
         if (dragRotate) {
-          requestAnimationFrame(animate);
+          return requestAnimationFrame(animate);
         }
       }
     },
-    [dragRotate],
+    [dragRotate, rotate],
   );
 
   useEffect(
@@ -59,12 +84,23 @@ const ReactIllustration = ({children, dragRotate, onMount, ...props}) => {
 ReactIllustration.propTypes = {
   children: PropTypes.node,
   dragRotate: PropTypes.bool,
+  rotate: PropTypes.oneOfType([
+    PropTypes.shape({
+      axis: PropTypes.oneOf(AXES).isRequired,
+      value: PropTypes.number.isRequired,
+    }),
+    PropTypes.shape({
+      axis: PropTypes.oneOf(AXES).isRequired,
+      easingAngle: PropTypes.number.isRequired,
+    }),
+  ]),
   // withParentContext
   onMount: PropTypes.func.isRequired,
 };
 
 ReactIllustration.defaultProps = {
   children: null,
+  rotate: null,
   dragRotate: false,
 };
 
