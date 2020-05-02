@@ -43,6 +43,7 @@ const makePath = (radius, teeth) => {
 const makeFillPath = (path) => path.map((corner, index, list) => {
   const nextCorner = list[index + 1] || list[0];
   return {
+    key: index,
     path: [
       new Vector(corner).add(TRANSLATE_FRONT),
       new Vector(corner).add(TRANSLATE_BACK),

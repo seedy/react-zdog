@@ -1,8 +1,9 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import { TAU } from 'zdog';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import useComputeRotate from 'Zdog/useComputeRotate';
 
 import MuiBox from '@material-ui/core/Box';
 import Illustration from 'Zdog/Illustration';
@@ -14,8 +15,14 @@ import Key from 'components/Key';
 import Lock from 'components/Lock';
 
 // CONSTANTS
-const ILLU_ROTATE = {
+const CYCLES = 300;
+
+const ILLU_ROTATE_ODD = {
   axis: 'z',
+  easingAngle: TAU,
+};
+const ILLU_ROTATE_EVEN = {
+  axis: 'y',
   easingAngle: TAU,
 };
 
@@ -32,6 +39,8 @@ const App = () => {
 
   const [rotating, setRotating] = useState(true);
 
+  const { tickerRef, computeRotate } = useComputeRotate();
+
   const onDragStart = useCallback(
     () => {
       setRotating(false);
@@ -39,9 +48,18 @@ const App = () => {
     [setRotating],
   );
 
-  const rotate = useMemo(
-    () => (rotating ? ILLU_ROTATE : null),
-    [rotating],
+  const animate = useCallback(
+    (illo) => {
+      if (rotating) {
+        const rotate = (tickerRef.current % CYCLES) < (CYCLES / 2)
+          ? ILLU_ROTATE_ODD
+          : ILLU_ROTATE_EVEN;
+        const { axis } = rotate;
+        const value = computeRotate(rotate);
+        illo.rotate[axis] = value;
+      }
+    },
+    [computeRotate, rotating, tickerRef],
   );
 
   return (
@@ -53,7 +71,7 @@ const App = () => {
       justifyContent="center"
       classes={{ root: classes.boxRoot }}
     >
-      <Illustration rotate={rotate} dragRotate onDragStart={onDragStart}>
+      <Illustration animate={animate} dragRotate onDragStart={onDragStart}>
         {/* <Vault /> */}
         {/* <Logo translate={TRANSLATE_BACKGROUND} rotate={LOGO_ROTATE} /> */}
         <Anchor

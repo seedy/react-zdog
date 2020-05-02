@@ -6,34 +6,17 @@ import PropTypes from 'prop-types';
 import AXES from 'Zdog/AXES';
 
 import isNil from 'helpers/isNil';
+import isFunction from 'helpers/isFunction';
 import always from 'helpers/always';
 
 import useRequestAnimationFrame from 'Zdog/useRequestAnimationFrame';
+import useComputeRotate from 'Zdog/useComputeRotate';
 
-import { Illustration, easeInOut } from 'zdog';
-
+import { Illustration } from 'zdog';
 import withParentContext from 'Zdog/Context/Parent/with';
 
 // CONTEXT
 export const IlloContext = createContext({});
-
-// CONSTANTS
-const CYCLES = 150;
-let TICKER = 0;
-
-// HELPERS
-const computeRotate = (prevRotate, { value, easingAngle }) => {
-  if (!isNil(value)) {
-    return prevRotate + value;
-  }
-  if (!isNil(easingAngle)) {
-    const progress = TICKER / CYCLES;
-    const easing = easeInOut(progress % 1);
-    TICKER += 1;
-    return easing * easingAngle;
-  }
-  return null;
-};
 
 const shouldAnimate = (illo, childrenCount, sceneCount, readyCount) => !isNil(illo)
 && (childrenCount === 0 || (childrenCount > 0 && sceneCount > 0 && sceneCount === readyCount));
@@ -67,7 +50,7 @@ let ReactIllustration = ({
 
   return (
     <IlloContext.Provider value={contextValue}>
-      <svg width="800" height="800" ref={onIlloNode} />
+      <svg width="1000" height="800" ref={onIlloNode} />
       {children}
     </IlloContext.Provider>
   );
@@ -93,11 +76,13 @@ ReactIllustration = withParentContext(ReactIllustration);
 ReactIllustration = memo(ReactIllustration, always(true));
 
 const AnimationLayer = ({
-  rotate, dragRotate, children, ...rest
+  animate, rotate, dragRotate, children, ...rest
 }) => {
   const illoRef = useRef();
   const sceneCountRef = useRef(0);
   const readyCountRef = useRef(0);
+
+  const { computeRotate } = useComputeRotate(illoRef);
 
   const onAnimate = useCallback(
     () => {
@@ -105,9 +90,13 @@ const AnimationLayer = ({
       const { current: sceneCount } = sceneCountRef;
       const { current: readyCount } = readyCountRef;
       if (shouldAnimate(illo, Children.count(children), sceneCount, readyCount)) {
+        if (isFunction(animate)) {
+          animate(illo);
+          return illo.updateRenderGraph();
+        }
         if (!isNil(rotate)) {
           const { axis } = rotate;
-          const value = computeRotate(illo.rotate[axis], rotate);
+          const value = computeRotate(rotate);
           illo.rotate[axis] = value;
           return illo.updateRenderGraph();
         }
@@ -117,7 +106,7 @@ const AnimationLayer = ({
       }
       return undefined;
     },
-    [children, rotate, dragRotate],
+    [children, animate, rotate, dragRotate, computeRotate],
   );
 
   useRequestAnimationFrame(onAnimate);
@@ -154,12 +143,14 @@ AnimationLayer.propTypes = {
     }),
   ]),
   dragRotate: PropTypes.bool,
+  animate: PropTypes.func,
   children: PropTypes.node,
 };
 
 AnimationLayer.defaultProps = {
   rotate: null,
   dragRotate: false,
+  animate: null,
   children: null,
 };
 

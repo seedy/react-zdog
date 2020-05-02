@@ -24,7 +24,8 @@
       {
         "props": true,
         "ignorePropertyModificationsFor": [
-          "ref"
+          "ref",
+          "illo",
         ]
       }
     ],
