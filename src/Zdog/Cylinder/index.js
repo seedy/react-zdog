@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 
-import SHAPES, { CYLINDER } from '../SHAPES';
+import SHAPES, { CYLINDER } from 'Zdog/SHAPES';
 
-import withProxy from '../../components/Proxy/with';
-import Anchor from '../Anchor';
+import withProxy from 'components/Proxy/with';
+import Anchor from 'Zdog/Anchor';
 
 const ReactCylinder = withProxy(Anchor);
 

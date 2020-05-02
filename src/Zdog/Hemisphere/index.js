@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 
-import SHAPES, { HEMISPHERE } from '../SHAPES';
+import SHAPES, { HEMISPHERE } from 'Zdog/SHAPES';
 
-import withProxy from '../../components/Proxy/with';
-import Anchor from '../Anchor';
+import withProxy from 'components/Proxy/with';
+import Anchor from 'Zdog/Anchor';
 
 const ReactHemisphere = withProxy(Anchor);
 

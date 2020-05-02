@@ -1,4 +1,4 @@
-import {useRef, useCallback, useEffect} from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 
 export default (callback) => {
   const requestRef = useRef();
@@ -18,4 +18,4 @@ export default (callback) => {
     },
     [requestRef, animate],
   );
-}
+};

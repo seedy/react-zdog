@@ -1,21 +1,21 @@
-import React, {useState, useCallback, useMemo} from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 
-import {TAU} from 'zdog';
+import { TAU } from 'zdog';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import MuiBox from '@material-ui/core/Box';
-import Illustration from './Zdog/Illustration';
-import Vault from './components/Vault';
-import Logo from './components/Logo';
-import Gear from './components/Gear';
+import Illustration from 'Zdog/Illustration';
+import Anchor from 'Zdog/Anchor';
+// import Vault from 'components/Vault';
+// import Logo from 'components/Logo';
+import Gear from 'components/Gear';
+import Key from 'components/Key';
+import Lock from 'components/Lock';
 
 // CONSTANTS
-const TRANSLATE_BACKGROUND = { z: -300 };
-const LOGO_ROTATE = { x: TAU / 2 };
-
 const ILLU_ROTATE = {
-  axis: 'x',
+  axis: 'z',
   easingAngle: TAU,
 };
 
@@ -40,26 +40,40 @@ const App = () => {
   );
 
   const rotate = useMemo(
-    () => rotating ? ILLU_ROTATE : null,
+    () => (rotating ? ILLU_ROTATE : null),
     [rotating],
   );
 
   return (
-    <MuiBox 
-      height="100%" 
-      width="100%" 
-      display="flex" 
-      alignItems="center" 
-      justifyContent="center" 
-      classes={{root: classes.boxRoot}}
+    <MuiBox
+      height="100%"
+      width="100%"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      classes={{ root: classes.boxRoot }}
     >
-      <Illustration rotate={null} dragRotate onDragStart={onDragStart}>
-        {/* <Vault/> */}
+      <Illustration rotate={rotate} dragRotate onDragStart={onDragStart}>
+        {/* <Vault /> */}
         {/* <Logo translate={TRANSLATE_BACKGROUND} rotate={LOGO_ROTATE} /> */}
-        <Gear />
+        <Anchor
+          rotate={{ y: TAU / 4, z: -TAU / 4 }}
+        >
+          <Gear
+            scale={3}
+          />
+          <Key
+            translate={{ y: 300 }}
+            rotate={{ x: TAU / 2 }}
+          />
+          <Lock
+            translate={{ y: -300 }}
+            rotate={{ x: TAU / 4, z: TAU / 4 }}
+          />
+        </Anchor>
       </Illustration>
     </MuiBox>
   );
-}
+};
 
 export default App;

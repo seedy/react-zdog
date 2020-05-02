@@ -1,19 +1,21 @@
 import { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import SHAPES from '../SHAPES';
+import SHAPES from 'Zdog/SHAPES';
 
-import isNil from '../../helpers/isNil';
+import isNil from 'helpers/isNil';
 
-import useAddTo from '../useAddTo';
-import useIlloUpdate from '../useIlloUpdate';
+import useAddTo from 'Zdog/useAddTo';
+import useIlloUpdate from 'Zdog/useIlloUpdate';
 
-import withParentContext from '../Context/Parent/with';
+import withParentContext from 'Zdog/Context/Parent/with';
 
 import Zdog from 'zdog';
 
 // COMPONENTS
-const ReactAnchor = ({ onMount, children, shape, ...props }) => {
+const ReactAnchor = ({
+  onMount, children, shape, ...props
+}) => {
   const parentRef = useAddTo();
 
   const illoUpdate = useIlloUpdate();
@@ -28,7 +30,7 @@ const ReactAnchor = ({ onMount, children, shape, ...props }) => {
         ...props,
       });
       onMount(anchor);
-      illoUpdate();
+      return illoUpdate();
     },
     [illoUpdate, onMount, parentRef, props, shape],
   );

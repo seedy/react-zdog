@@ -1,11 +1,11 @@
 import { useContext, useCallback, useEffect } from 'react';
 
-import isNil from '../../helpers/isNil';
+import isNil from 'helpers/isNil';
 
-import { IlloContext } from '../Illustration';
+import { IlloContext } from 'Zdog/Illustration';
 
 export default () => {
-  const {ref: illoRef, sceneCount, readyCount} = useContext(IlloContext);
+  const { ref: illoRef, sceneCount, readyCount } = useContext(IlloContext);
 
   useEffect(
     () => {
@@ -23,4 +23,4 @@ export default () => {
     },
     [illoRef, readyCount],
   );
-}
+};

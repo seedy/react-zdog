@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 
-import SHAPES, { RECT } from '../SHAPES';
+import SHAPES, { RECT } from 'Zdog/SHAPES';
 
-import withProxy from '../../components/Proxy/with';
-import Anchor from '../Anchor';
+import withProxy from 'components/Proxy/with';
+import Anchor from 'Zdog/Anchor';
 
 const ReactRect = withProxy(Anchor);
 

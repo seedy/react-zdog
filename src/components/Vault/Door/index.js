@@ -2,21 +2,21 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 
-import Anchor from '../../../Zdog/Anchor';
-import Rect from '../../../Zdog/Rect';
-import Shape from '../../../Zdog/Shape';
-import Cylinder from '../../../Zdog/Cylinder';
-import Hemisphere from '../../../Zdog/Hemisphere';
+import Anchor from 'Zdog/Anchor';
+import Rect from 'Zdog/Rect';
+import Shape from 'Zdog/Shape';
+import Cylinder from 'Zdog/Cylinder';
+import Hemisphere from 'Zdog/Hemisphere';
 
 // COMPONENTS
-const Door = ({diameter, stroke, scale}) => {
+const Door = ({ diameter, stroke, scale }) => {
   const scaledDiameter = useMemo(
     () => diameter * scale,
     [diameter, scale],
   );
 
   const cylinderDiameter = useMemo(
-    () => scaledDiameter * Math.pow(scale, 6),
+    () => scaledDiameter * scale ** 6,
     [scale, scaledDiameter],
   );
 
@@ -26,59 +26,59 @@ const Door = ({diameter, stroke, scale}) => {
   );
 
   const translateJoints = useMemo(
-    () => ({x: scaledDiameter / 2}),
+    () => ({ x: scaledDiameter / 2 }),
     [scaledDiameter],
   );
 
   const translateTopJoint = useMemo(
-    () => ({y: scaledDiameter / 4}),
+    () => ({ y: scaledDiameter / 4 }),
     [scaledDiameter],
   );
 
   const translateBottomJoint = useMemo(
-    () => ({ y: - scaledDiameter / 4}),
+    () => ({ y: -scaledDiameter / 4 }),
     [scaledDiameter],
   );
 
   const translateLegs = useMemo(
-    () => ({y: diameter / 2}),
+    () => ({ y: diameter / 2 }),
     [diameter],
   );
 
   const translateLeftLeg = useMemo(
-    () => ({x: - 3 * diameter / 8}),
+    () => ({ x: -0.375 * diameter }),
     [diameter],
   );
 
   const translateRightLeg = useMemo(
-    () => ({x: 3 * diameter / 8}),
+    () => ({ x: 0.375 * diameter }),
     [diameter],
   );
 
   const translateLock = useMemo(
-    () => ({x: scaledDiameter / 4, z: 3 * scaledStroke / 4}),
+    () => ({ x: scaledDiameter / 4, z: 0.75 * scaledStroke }),
     [scaledDiameter, scaledStroke],
   );
 
   const translateLockBasis = useMemo(
-    () => ({z: -scaledStroke / 2}),
+    () => ({ z: -scaledStroke / 2 }),
     [scaledStroke],
   );
 
   const translateHandle = useMemo(
-    () => ({x: - scaledDiameter / 4}),
+    () => ({ x: -scaledDiameter / 4 }),
     [scaledDiameter],
   );
 
   const translateHandleSleeve = useMemo(
-    () => ({z: 3 * scaledStroke / 4}),
+    () => ({ z: 0.75 * scaledStroke }),
     [scaledStroke],
   );
 
   const handlePath = useMemo(
     () => [
-      {y: 0},
-      {y: scaledDiameter / 4},
+      { y: 0 },
+      { y: scaledDiameter / 4 },
     ],
     [scaledDiameter],
   );
@@ -149,7 +149,7 @@ const Door = ({diameter, stroke, scale}) => {
       </Anchor>
     </Rect>
   );
-}
+};
 
 Door.propTypes = {
   diameter: PropTypes.number.isRequired,

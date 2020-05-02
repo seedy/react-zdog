@@ -1,0 +1,43 @@
+{
+  "root": true,
+  "extends": [
+    "react-app",
+    "airbnb",
+    "airbnb/hooks"
+  ],
+  "env": {
+    "es6": true,
+    "browser": true
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": [
+          "src"
+        ]
+      }
+    }
+  },
+  "rules": {
+    "no-param-reassign": [
+      "error",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": [
+          "ref"
+        ]
+      }
+    ],
+    "react/jsx-props-no-spreading": "off",
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".md"
+        ]
+      }
+    ]
+  }
+}
